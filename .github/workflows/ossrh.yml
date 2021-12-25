@@ -2,7 +2,7 @@ name: OSSRH
 
 on:
   push:
-    branches: [ main, master, java ]
+    branches: [ main, master ]
 
 jobs:
   publish:
