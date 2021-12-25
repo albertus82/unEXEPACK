@@ -154,6 +154,9 @@ public class UnExepack {
 		}
 
 		final int exepackOffset = (dh.getECparhdr() + dh.getECs()) * 16;
+		if (exepackOffset > packedExec.length) {
+			throw new InvalidExepackHeaderException(new byte[] {});
+		}
 		final ExepackHeader eh = new ExepackHeader(Arrays.copyOfRange(packedExec, exepackOffset, exepackOffset + ExepackHeader.SIZE));
 		log.log(Level.INFO, () -> String.format("Exepack header @ 0x%X: %s", exepackOffset, eh));
 
