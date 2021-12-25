@@ -7,7 +7,7 @@
 
 	<groupId>io.github.albertus82</groupId>
 	<artifactId>unexepack</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>unEXEPACK</name>
 	<url>https://github.com/albertus82/unEXEPACK</url>
 	<description>Unpacker for Microsoft EXEPACK utility compressor.</description>
@@ -301,6 +301,7 @@
 					<outputTimestamp>${git.commit.time}</outputTimestamp>
 					<archive>
 						<manifest>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<mainClass>${main.class}</mainClass>
 							<addClasspath>true</addClasspath>
@@ -417,6 +418,7 @@
 				<version>3.3.0</version>
 				<configuration>
 					<finalName>${project.artifactId}-${project.version}</finalName>
+					<outputTimestamp>${git.commit.time}</outputTimestamp>
 				</configuration>
 				<executions>
 					<execution>
@@ -426,7 +428,6 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<outputTimestamp>${git.commit.time}</outputTimestamp>
 							<descriptors>
 								<descriptor>src/assembly/unix.xml</descriptor>
 							</descriptors>
@@ -439,7 +440,6 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<outputTimestamp>${git.commit.time}</outputTimestamp>
 							<descriptors>
 								<descriptor>src/assembly/windows.xml</descriptor>
 							</descriptors>
