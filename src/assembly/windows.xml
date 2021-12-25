@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 https://maven.apache.org/xsd/assembly-2.1.0.xsd">
+
+	<id>bin</id>
+
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<includeBaseDirectory>true</includeBaseDirectory>
+
+	<baseDirectory>${project.build.finalName}</baseDirectory>
+
+	<files>
+		<file>
+			<source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>
+			<outputDirectory>./</outputDirectory>
+		</file>
+	</files>
+
+	<fileSets>
+		<fileSet>
+			<directory>${project.build.directory}/${dependencies.directory}</directory>
+			<outputDirectory>${dependencies.directory}</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}</directory>
+			<includes>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+				<include>README*</include>
+			</includes>
+			<outputDirectory>./</outputDirectory>
+			<lineEnding>windows</lineEnding>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/${thirdparty.license.directory}</directory>
+			<outputDirectory>${thirdparty.license.directory}</outputDirectory>
+			<lineEnding>windows</lineEnding>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<includes>
+				<include>*.exe</include>
+			</includes>
+			<outputDirectory>./</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+</assembly>
