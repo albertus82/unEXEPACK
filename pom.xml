@@ -7,7 +7,7 @@
 
 	<groupId>io.github.albertus82</groupId>
 	<artifactId>unexepack</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>unEXEPACK</name>
 	<url>https://github.com/albertus82/unEXEPACK</url>
 	<description>Unpacker for Microsoft EXEPACK utility compressor.</description>
@@ -18,6 +18,15 @@
 			<url>https://opensource.org/licenses/MIT</url>
 		</license>
 	</licenses>
+
+	<developers>
+		<developer>
+			<name>albertus82</name>
+			<email>albertus82&lt;at&gt;pm.me</email>
+			<organization>albertus82-github</organization>
+			<organizationUrl>https://github.com/albertus82</organizationUrl>
+		</developer>
+	</developers>
 
 	<scm>
 		<connection>scm:git:https://github.com/albertus82/unEXEPACK.git</connection>
@@ -47,6 +56,18 @@
 			</activation>
 			<properties>
 				<maven.compiler.release>8</maven.compiler.release>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>skip-gpg</id>
+			<activation>
+				<property>
+					<name>!env.MAVEN_GPG_PASSPHRASE</name>
+				</property>
+			</activation>
+			<properties>
+				<gpg.skip>true</gpg.skip>
 			</properties>
 		</profile>
 
@@ -177,6 +198,11 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.2</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -203,28 +229,16 @@
 				<version>4.0.5</version>
 				<executions>
 					<execution>
-						<id>zoned</id>
 						<goals>
 							<goal>revision</goal>
 						</goals>
 						<phase>initialize</phase>
-						<configuration>
-							<prefix>zoned.git</prefix>
-							<dateFormat>yyyy-MM-dd'T'HH:mm:ssXXX</dateFormat>
-						</configuration>
-					</execution>
-					<execution>
-						<id>local</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-						<phase>initialize</phase>
-						<configuration>
-							<prefix>local.git</prefix>
-							<dateFormat>yyyy-MM-dd'T'HH:mm:ss'Z'</dateFormat>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<dateFormat>yyyy-MM-dd'T'HH:mm:ssXXX</dateFormat>
+					<dateFormatTimeZone>Z</dateFormatTimeZone>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -284,7 +298,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.2.0</version>
 				<configuration>
-					<outputTimestamp>${local.git.commit.time}</outputTimestamp>
+					<outputTimestamp>${git.commit.time}</outputTimestamp>
 					<archive>
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -335,6 +349,20 @@
 						<id>report</id>
 						<goals>
 							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>parse-version</id>
+						<goals>
+							<goal>parse-version</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -398,7 +426,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<outputTimestamp>${zoned.git.commit.time}</outputTimestamp>
+							<outputTimestamp>${git.commit.time}</outputTimestamp>
 							<descriptors>
 								<descriptor>src/assembly/unix.xml</descriptor>
 							</descriptors>
@@ -411,7 +439,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<outputTimestamp>${local.git.commit.time}</outputTimestamp>
+							<outputTimestamp>${git.commit.time}</outputTimestamp>
 							<descriptors>
 								<descriptor>src/assembly/windows.xml</descriptor>
 							</descriptors>
@@ -434,8 +462,70 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<gpgArguments>
+						<arg>--pinentry-mode</arg>
+						<arg>loopback</arg>
+					</gpgArguments>
+					<passphrase>${env.MAVEN_GPG_PASSPHRASE}</passphrase>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<!-- Compile -->
@@ -443,6 +533,7 @@
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 			<version>${picocli.version}</version>
+			<optional>true</optional>
 		</dependency>
 		<!-- Provided -->
 		<dependency>

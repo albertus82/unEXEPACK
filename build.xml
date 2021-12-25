@@ -91,7 +91,7 @@
 			<config outfile="${project.build.directory}/${project.artifactId}.exe" jarpath="${project.artifactId}.${project.packaging}" headertype="console" dontwrapjar="true" stayalive="true" restartoncrash="false" priority="normal" errtitle="${project.name}" chdir=".">
 				<jre minversion="${maven.compiler.target}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
 				<classPath mainclass="${main.class}" />
-				<versionInfo fileversion="${project.version}.0" txtfileversion="${project.version}" filedescription="${project.name}" copyright=" " productversion="${project.version}.0" txtproductversion="${project.version}" productname="${project.artifactId}" internalname="${project.artifactId}" originalfilename="${project.artifactId}.exe" companyname="" />
+				<versionInfo fileversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtfileversion="${project.version}" filedescription="${project.name}" copyright=" " productversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtproductversion="${project.version}" productname="${project.artifactId}" internalname="${project.artifactId}" originalfilename="${project.artifactId}.exe" companyname="" />
 			</config>
 		</launch4j>
 	</target>

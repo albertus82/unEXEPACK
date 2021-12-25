@@ -39,6 +39,9 @@
 			<directory>${project.basedir}/${thirdparty.license.directory}</directory>
 			<outputDirectory>${thirdparty.license.directory}</outputDirectory>
 			<lineEnding>unix</lineEnding>
+			<excludes>
+				<exclude>*launch4j*</exclude>
+			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/bin/unix</directory>
