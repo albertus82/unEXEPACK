@@ -38,7 +38,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<main.class>${project.groupId}.${project.artifactId}.UnExepack</main.class>
+		<main.class>${project.groupId}.${project.artifactId}.UnExepackCommand</main.class>
 		<dependencies.directory>lib</dependencies.directory>
 		<thirdparty.license.directory>3rdparty</thirdparty.license.directory>
 		<lombok.version>1.18.20</lombok.version>
