@@ -22,7 +22,7 @@
 	<developers>
 		<developer>
 			<name>albertus82</name>
-			<email>albertus82&lt;at&gt;pm.me</email>
+			<email>albertus82@pm.me</email>
 			<organization>albertus82-github</organization>
 			<organizationUrl>https://github.com/albertus82</organizationUrl>
 		</developer>
@@ -39,6 +39,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<main.class>${project.groupId}.${project.artifactId}.UnExepackCommand</main.class>
+		<lombok.outputDirectory>${project.build.directory}/generated-sources/delombok</lombok.outputDirectory>
 		<dependencies.directory>lib</dependencies.directory>
 		<thirdparty.license.directory>3rdparty</thirdparty.license.directory>
 		<lombok.version>1.18.20</lombok.version>
@@ -74,7 +75,6 @@
 		<profile>
 			<id>codeql</id>
 			<properties>
-				<lombok.outputDirectory>${project.build.directory}/generated-sources/delombok</lombok.outputDirectory>
 				<lombok.testOutputDirectory>${project.build.directory}/generated-test-sources/delombok</lombok.testOutputDirectory>
 			</properties>
 			<build>
@@ -85,30 +85,17 @@
 						<version>${lombok.version}.0</version>
 						<executions>
 							<execution>
-								<id>delombok</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>delombok</goal>
-								</goals>
-								<configuration>
-									<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-								</configuration>
-							</execution>
-							<execution>
 								<id>delombok-test</id>
-								<phase>generate-test-sources</phase>
 								<goals>
 									<goal>testDelombok</goal>
 								</goals>
 								<configuration>
 									<sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+									<addOutputDirectory>false</addOutputDirectory>
+									<verbose>true</verbose>
 								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<addOutputDirectory>false</addOutputDirectory>
-							<verbose>true</verbose>
-						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -374,6 +361,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
+						<!-- <?m2e execute?> -->
 						<id>lombok-config</id>
 						<phase>initialize</phase>
 						<goals>
@@ -384,7 +372,6 @@
 								<ant target="lombok-config" />
 							</target>
 						</configuration>
-						<?m2e execute?>
 					</execution>
 					<execution>
 						<id>launch4j</id>
@@ -479,6 +466,25 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok-maven-plugin</artifactId>
+				<version>${lombok.version}.0</version>
+				<executions>
+					<execution>
+						<id>delombok</id>
+						<goals>
+							<goal>delombok</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+							<addOutputDirectory>false</addOutputDirectory>
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.3.1</version>
@@ -490,6 +496,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<sourcepath>${lombok.outputDirectory}</sourcepath>
+				</configuration>
 			</plugin>
 
 			<plugin>
