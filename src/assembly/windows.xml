@@ -11,12 +11,13 @@
 
 	<includeBaseDirectory>true</includeBaseDirectory>
 
-	<baseDirectory>${project.build.finalName}-${project.version}</baseDirectory>
+	<baseDirectory>${project.name} ${project.version}</baseDirectory>
 
 	<files>
 		<file>
 			<source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>
 			<outputDirectory>./</outputDirectory>
+			<destName>${project.name}.${project.packaging}</destName>
 		</file>
 	</files>
 

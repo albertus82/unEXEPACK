@@ -15,7 +15,15 @@ import lombok.NonNull;
 import lombok.extern.java.Log;
 
 // Translated from the C code @ https://github.com/w4kfu/unEXEPACK
-// See also: https://www.bamsoftware.com/software/exepack/
+
+/**
+ * Unpacker for Microsoft EXEPACK utility compressor.
+ * 
+ * @see <a href=
+ *      "https://github.com/w4kfu/unEXEPACK">https://github.com/w4kfu/unEXEPACK</a>
+ * @see <a href=
+ *      "https://www.bamsoftware.com/software/exepack/">https://www.bamsoftware.com/software/exepack/</a>
+ */
 @Log
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UnExepack {
@@ -144,6 +152,18 @@ public class UnExepack {
 		return writeExe(dhead, unpackedData, reloc, paddingLength);
 	}
 
+	/**
+	 * Unpacks an EXE file packed with Microsoft EXEPACK.
+	 *
+	 * @param packedExec the array containing the packed EXE file
+	 *
+	 * @return an array containing the unpacked EXE file
+	 *
+	 * @throws InvalidDosHeaderException if the input file is not a valid MS-DOS
+	 *         executable
+	 * @throws InvalidExepackHeaderException if the input file is not a valid
+	 *         EXEPACK executable
+	 */
 	public static byte[] unpack(@NonNull final byte[] packedExec) throws InvalidDosHeaderException, InvalidExepackHeaderException {
 		final DosHeader dh = new DosHeader(Arrays.copyOf(packedExec, DosHeader.SIZE));
 		log.log(Level.INFO, "DOS header: {0}", dh);
@@ -172,6 +192,16 @@ public class UnExepack {
 		return craftExec(dh, eh, unpackedData, reloc);
 	}
 
+	/**
+	 * Finds the start of the first occurrence of the byte array <em>needle</em> in
+	 * the byte array <em>haystack</em>.
+	 *
+	 * @param haystack the array to be scanned
+	 * @param needle the array containing the sequence of bytes to match
+	 *
+	 * @return the index of the beginning of the needle, or {@code -1} if the needle
+	 *         is not found.
+	 */
 	public static int memmem(@NonNull final byte[] haystack, @NonNull final byte[] needle) {
 		for (int i = 0; i < haystack.length - needle.length + 1; ++i) {
 			boolean found = true;

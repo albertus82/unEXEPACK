@@ -11,12 +11,13 @@
 
 	<includeBaseDirectory>true</includeBaseDirectory>
 
-	<baseDirectory>${project.build.finalName}-${project.version}</baseDirectory>
+	<baseDirectory>${project.artifactId}-${project.version}</baseDirectory>
 
 	<files>
 		<file>
 			<source>${project.build.directory}/${project.build.finalName}.${project.packaging}</source>
 			<outputDirectory>./</outputDirectory>
+			<destName>${project.artifactId}.${project.packaging}</destName>
 		</file>
 	</files>
 
