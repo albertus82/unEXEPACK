@@ -21,7 +21,7 @@ import lombok.extern.java.Log;
 /**
  * Unpacker for Microsoft EXEPACK utility compressor.
  *
- * @see <a href= "https://github.com/w4kfu/unEXEPACK">GitHub - w4kfu/unEXEPACK:
+ * @see <a href="https://github.com/w4kfu/unEXEPACK">GitHub - w4kfu/unEXEPACK:
  *      unpacker for Microsoft EXEPACK</a>
  * @see <a href=
  *      "https://www.bamsoftware.com/software/exepack/">https://www.bamsoftware.com/software/exepack/</a>
