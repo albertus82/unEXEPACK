@@ -6,6 +6,7 @@ import java.io.UncheckedIOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Level;
 
@@ -14,27 +15,20 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 
-// Translated from the C code @ https://github.com/w4kfu/unEXEPACK
+// Translated from the C code at https://github.com/w4kfu/unEXEPACK with some improvements.
+// Many thanks to the original authors.
 
 /**
  * Unpacker for Microsoft EXEPACK utility compressor.
- * 
- * @see <a href=
- *      "https://github.com/w4kfu/unEXEPACK">https://github.com/w4kfu/unEXEPACK</a>
+ *
+ * @see <a href= "https://github.com/w4kfu/unEXEPACK">GitHub - w4kfu/unEXEPACK:
+ *      unpacker for Microsoft EXEPACK</a>
  * @see <a href=
  *      "https://www.bamsoftware.com/software/exepack/">https://www.bamsoftware.com/software/exepack/</a>
  */
 @Log
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UnExepack {
-
-	private static void reverse(@NonNull final byte[] array) {
-		for (int i = 0, j = array.length - 1; i < j; i++, j--) {
-			final byte c = array[i];
-			array[i] = array[j];
-			array[j] = c;
-		}
-	}
 
 	/* buf is already reversed, because EXEPACK use backward processing */
 	private static byte[] unpackData(@NonNull final byte[] packedData, final int unpackedDataSize) {
@@ -77,20 +71,26 @@ public class UnExepack {
 				throw new IllegalStateException("Data left are too large");
 			}
 			System.arraycopy(packedData, i, unpackedData, curUnpackedDataSize, packedData.length - i);
+			curUnpackedDataSize += packedData.length - i;
 		}
-		return unpackedData;
+		return curUnpackedDataSize < unpackedDataSize ? Arrays.copyOf(unpackedData, curUnpackedDataSize) : unpackedData;
 	}
 
 	private static byte[] createRelocTable(@NonNull final byte[] packedExec, @NonNull final DosHeader dh, @NonNull final ExepackHeader eh) {
 		final int exepackOffset = (dh.getECparhdr() + dh.getECs()) * 16;
-		final byte[] bytePattern = new byte[] { (byte) 0xcd, 0x21, (byte) 0xb8, (byte) 0xff, 0x4c, (byte) 0xcd, 0x21 }; // the byte pattern that precedes the error message, cd 21 b8 ff 4c cd 21, which encodes the instructions int 0x21; mov ax, 0x4cff; int 0x21
-		final int reloc = exepackOffset + memmem(Arrays.copyOfRange(packedExec, exepackOffset, packedExec.length), bytePattern) + bytePattern.length;
-		final int relocLength = eh.getExepackSize() - (reloc - exepackOffset) + "Packed file is corrupt".length();
+		final byte[] haystack = Arrays.copyOfRange(packedExec, exepackOffset, packedExec.length);
+		final String message = "Packed file is corrupt";
+		final int reloc = exepackOffset + ByteArrayUtils.memmem(haystack, message.getBytes(StandardCharsets.US_ASCII)).orElseGet(() -> {
+			log.log(Level.INFO, "Cannot find string \"{0}\", trying with asm pattern.", message);
+			final byte[] bytePattern = new byte[] { (byte) 0xcd, 0x21, (byte) 0xb8, (byte) 0xff, 0x4c, (byte) 0xcd, 0x21 }; // the byte pattern that precedes the error message, cd 21 b8 ff 4c cd 21, which encodes the instructions int 0x21; mov ax, 0x4cff; int 0x21
+			return ByteArrayUtils.memmem(haystack, bytePattern).orElseThrow(() -> new UnsupportedOperationException("Cannot compute relocation table location")) + bytePattern.length;
+		});
+		final int relocLength = eh.getExepackSize() - (reloc - exepackOffset) + message.length();
 		final int nbReloc = (relocLength - 16 * Short.BYTES) / 2;
 		final int relocTableSize = nbReloc * 2 * Short.BYTES;
 		final ByteBuffer buf = ByteBuffer.wrap(packedExec);
 		buf.order(ByteOrder.LITTLE_ENDIAN);
-		buf.position(reloc + "Packed file is corrupt".length());
+		buf.position(reloc + message.length());
 		try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			for (int i = 0; i < 16; i++) {
 				final int count = Short.toUnsignedInt(buf.getShort());
@@ -185,36 +185,11 @@ public class UnExepack {
 		final int packedDataEnd = exepackOffset;
 
 		final byte[] packedData = Arrays.copyOfRange(packedExec, packedDataStart, packedDataEnd);
-		reverse(packedData);
+		ByteArrayUtils.reverse(packedData);
 		final byte[] unpackedData = unpackData(packedData, unpackedDataSize);
-		reverse(unpackedData);
+		ByteArrayUtils.reverse(unpackedData);
 		final byte[] reloc = createRelocTable(packedExec, dh, eh);
 		return craftExec(dh, eh, unpackedData, reloc);
-	}
-
-	/**
-	 * Finds the start of the first occurrence of the byte array <em>needle</em> in
-	 * the byte array <em>haystack</em>.
-	 *
-	 * @param haystack the array to be scanned
-	 * @param needle the array containing the sequence of bytes to match
-	 *
-	 * @return the index of the beginning of the needle, or {@code -1} if the needle
-	 *         is not found.
-	 */
-	public static int memmem(@NonNull final byte[] haystack, @NonNull final byte[] needle) {
-		for (int i = 0; i < haystack.length - needle.length + 1; ++i) {
-			boolean found = true;
-			for (int j = 0; j < needle.length; ++j) {
-				if (haystack[i + j] != needle[j]) {
-					found = false;
-					break;
-				}
-			}
-			if (found)
-				return i;
-		}
-		return -1;
 	}
 
 	static int decodeExeLen(final int eCblp, final int eCp) {

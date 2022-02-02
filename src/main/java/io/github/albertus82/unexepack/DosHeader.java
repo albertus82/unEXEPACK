@@ -9,8 +9,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
-// See also: https://www.tavi.co.uk/phobos/exeformat.html
-//           https://www.delorie.com/djgpp/doc/exe/
+/**
+ * A representation of the DOS header.
+ *
+ * @see <a href="https://www.tavi.co.uk/phobos/exeformat.html">Notes on the
+ *      format of DOS .EXE files - Phobos</a>
+ * @see <a href="https://www.delorie.com/djgpp/doc/exe/">EXE Format - DJ
+ *      Delorie</a>
+ */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class DosHeader {

@@ -7,7 +7,13 @@ import java.nio.ShortBuffer;
 import lombok.NonNull;
 import lombok.Value;
 
-// See also: https://moddingwiki.shikadi.net/wiki/Microsoft_EXEPACK
+/**
+ * A representation of the EXEPACK header.
+ *
+ * @see <a href=
+ *      "https://moddingwiki.shikadi.net/wiki/Microsoft_EXEPACK">Microsoft
+ *      EXEPACK - ModdingWiki</a>
+ */
 @Value
 class ExepackHeader {
 
@@ -38,7 +44,7 @@ class ExepackHeader {
 		destLen = Short.toUnsignedInt(buf.get(6));
 		final int word8 = Short.toUnsignedInt(buf.get(7));
 		final int word9 = Short.toUnsignedInt(buf.get(8));
-		if ((word9 != SIGNATURE && word8 != SIGNATURE) || exepackSize == 0x00) {
+		if ((word9 != SIGNATURE && word8 != SIGNATURE) || exepackSize == 0) {
 			throw new InvalidExepackHeaderException(bytes);
 		}
 		if (word8 == SIGNATURE && word9 != SIGNATURE) {

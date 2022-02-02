@@ -1,8 +1,8 @@
 package io.github.albertus82.unexepack;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,12 +20,9 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.java.Log;
 
 @Log
-class UnExepackTest extends BaseTest {
+class UnExepackTest {
 
 	private static final Map<String, String> digests = new HashMap<>();
-
-	private static final byte[] MZ = new byte[] { 0x4D, 0x5A, (byte) 0xB5, 0x00, (byte) 0x99, 0x00, 0x00, 0x00, 0x20, 0x00, (byte) 0xA9, 0x05, (byte) 0xA9, 0x05, (byte) 0xC5, 0x17, (byte) 0x80, 0x00, 0x00, 0x00, 0x12, 0x00, (byte) 0xD2, 0x12, 0x1E, 0x00, 0x00, 0x00 };
-	private static final byte[] RB = new byte[] { (byte) 0x94, (byte) 0xBB, 0x00, 0x00, 0x00, 0x00, (byte) 0x95, 0x01, 0x00, 0x08, 0x14, 0x18, (byte) 0xAB, 0x17, 0x01, 0x00, 0x52, 0x42 };
 
 	@BeforeAll
 	static void beforeAll() {
@@ -40,39 +39,31 @@ class UnExepackTest extends BaseTest {
 		digests.put("K.EXE", "9b8dc9e4208ef1b4a2af3b516c23a64007f55e9b24ab4fd019f68d454d380c8a");
 		digests.put("L.EXE", "f5923fa58a07523a8ca850684b6c96737ac9cde9e938f16f1d48105bc9e8267b");
 		digests.put("M.EXE", "8f397594e14eaf2b3e6174c4c747366dde1ef864a82d292c08225af4452537eb");
-	}
-
-	@Test
-	void testHeaders() throws InvalidDosHeaderException {
-		Assertions.assertDoesNotThrow(() -> new DosHeader(MZ));
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new DosHeader(new byte[27]));
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new DosHeader(new byte[29]));
-
-		DosHeader dh = new DosHeader(MZ);
-		Assertions.assertArrayEquals(MZ, dh.toByteArray());
-
-		Assertions.assertDoesNotThrow(() -> new ExepackHeader(RB));
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new ExepackHeader(new byte[17]));
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new ExepackHeader(new byte[19]));
+		digests.put("N.EXE", "510da30c521872dd0a8442c0b52e676d8333dd0f9ffa3af0a1ddde19cb840c63");
 	}
 
 	@Test
 	void testUnpack() throws IOException, InvalidHeaderException {
+		Assertions.assertThrows(NullPointerException.class, () -> UnExepack.unpack(null));
 		final String propertyName = "testSecret";
 		final String secret = System.getProperty(propertyName);
 		if (secret == null) {
 			log.log(Level.WARNING, "Missing system property ''{0}'', skipping unpacking test.", propertyName);
 		}
 		Assumptions.assumeTrue(secret != null);
-		final Path path = Paths.get(projectProperties.getProperty("project.build.testSourceDirectory"), "..", "resources", "exepacked.7z");
-		final SevenZFile sevenZFile = new SevenZFile(path.toFile(), secret.toCharArray());
-		SevenZArchiveEntry entry;
-		while ((entry = sevenZFile.getNextEntry()) != null) {
-			log.log(Level.INFO, "{0}", entry.getName());
-			final byte[] buf = new byte[(int) entry.getSize()];
-			Assertions.assertEquals(entry.getSize(), sevenZFile.read(buf));
-			Assertions.assertEquals(-1, sevenZFile.read());
-			Assertions.assertEquals(digests.get(entry.getName()), DigestUtils.sha256Hex(UnExepack.unpack(buf)));
+		final byte[] bytes;
+		try (final InputStream in = getClass().getResourceAsStream("/exepacked.7z")) {
+			bytes = IOUtils.toByteArray(in);
+		}
+		try (final SeekableByteChannel c = new SeekableInMemoryByteChannel(bytes); final SevenZFile sevenZFile = new SevenZFile(c, secret.toCharArray())) {
+			SevenZArchiveEntry entry;
+			while ((entry = sevenZFile.getNextEntry()) != null) {
+				log.log(Level.INFO, "{0}", entry.getName());
+				final byte[] buf = new byte[(int) entry.getSize()];
+				Assertions.assertEquals(entry.getSize(), sevenZFile.read(buf));
+				Assertions.assertEquals(-1, sevenZFile.read());
+				Assertions.assertEquals(digests.get(entry.getName()), DigestUtils.sha256Hex(UnExepack.unpack(buf)), entry.getName());
+			}
 		}
 	}
 

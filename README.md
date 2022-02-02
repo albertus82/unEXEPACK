@@ -1,4 +1,9 @@
-# unEXEPACK
+unEXEPACK
+=========
+
+[![Latest release](https://img.shields.io/github/release/albertus82/unEXEPACK.svg)](https://github.com/albertus82/unEXEPACK/releases/latest)
+[![Build](https://github.com/albertus82/unEXEPACK/actions/workflows/build.yml/badge.svg)](https://github.com/albertus82/unEXEPACK/actions)
+[![Known Vulnerabilities](https://snyk.io/test/github/albertus82/unEXEPACK/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/albertus82/unEXEPACK?targetFile=pom.xml)
 
 ## Information
 
@@ -24,15 +29,15 @@ Unpacker for Microsoft EXEPACK utility compressor.
 Header format:
 
 ```
-+ 0x00 : REAL_IP                [WORD]  // Original initial IP value
-+ 0x02 : REAL_CS                [WORD]  // Original initial (relative) CS value
-+ 0x04 : MEM_START              [WORD]  // Start of executable in memory : not used by the unpacker
-+ 0x06 : EXEPACK_SIZE           [WORD]  // sizeof (EXEPACK HEADER) + unpacker stub length + strlen(ERROR_STRING) + relocation table length
-+ 0x08 : REAL_SP                [WORD]  // Original initial SP value
-+ 0x0A : REAL_SS                [WORD]  // Original initial (relative) SS value
-+ 0x0C : DEST_LEN               [WORD]  // Unpacked data length (in paragraphs)
-+ 0x0E : SKIP_LEN               [WORD]  // field only present in specific version of EXEPACK : not used by the unpacker
-+ 0x10 : SIGNATURE              [WORD]  // Magic number "RB"
++ 0x00 : REAL_IP       [WORD]  // Original initial IP value
++ 0x02 : REAL_CS       [WORD]  // Original initial (relative) CS value
++ 0x04 : MEM_START     [WORD]  // Start of executable in memory : not used by the unpacker
++ 0x06 : EXEPACK_SIZE  [WORD]  // sizeof (EXEPACK HEADER) + unpacker stub length + strlen(ERROR_STRING) + relocation table length
++ 0x08 : REAL_SP       [WORD]  // Original initial SP value
++ 0x0A : REAL_SS       [WORD]  // Original initial (relative) SS value
++ 0x0C : DEST_LEN      [WORD]  // Unpacked data length (in paragraphs)
++ 0x0E : SKIP_LEN      [WORD]  // field only present in specific version of EXEPACK : not used by the unpacker
++ 0x10 : SIGNATURE     [WORD]  // Magic number "RB"
 ```
 
 ### Algorithm
@@ -56,8 +61,8 @@ EXEPACK employs a fairly basic run-length encoding, commands are encoded on bits
 Relocation table is optimized too, for each segment (0-15), there is the following layout, where `entry` is relative to the start of the exe in memory.
 
 ```
-+ 0x00 : NB_ENTRIES      [WORD]
-+ 0x02 : ENTRY           [WORD] * NB_ENTRIES
++ 0x00 : NB_ENTRIES    [WORD]
++ 0x02 : ENTRY         [WORD] * NB_ENTRIES
 ```
 
 ## Usage
@@ -68,7 +73,7 @@ Relocation table is optimized too, for each segment (0-15), there is the followi
 <dependency>
     <groupId>io.github.albertus82</groupId>
     <artifactId>unexepack</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
