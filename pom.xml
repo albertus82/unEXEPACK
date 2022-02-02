@@ -344,7 +344,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<?m2e execute?>
+						<!-- <?m2e execute?> -->
 						<id>lombok-config</id>
 						<phase>initialize</phase>
 						<goals>
