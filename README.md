@@ -1,7 +1,7 @@
 unEXEPACK
 =========
 
-[![Latest release](https://img.shields.io/github/release/albertus82/unEXEPACK.svg)](https://github.com/albertus82/unEXEPACK/releases/latest)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.albertus82/unexepack)
 [![Build](https://github.com/albertus82/unEXEPACK/actions/workflows/build.yml/badge.svg)](https://github.com/albertus82/unEXEPACK/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/albertus82/unEXEPACK/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/albertus82/unEXEPACK?targetFile=pom.xml)
 
