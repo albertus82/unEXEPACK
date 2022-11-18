@@ -73,7 +73,7 @@ Relocation table is optimized too, for each segment (0-15), there is the followi
 <dependency>
     <groupId>io.github.albertus82</groupId>
     <artifactId>unexepack</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
 </dependency>
 ```
 
