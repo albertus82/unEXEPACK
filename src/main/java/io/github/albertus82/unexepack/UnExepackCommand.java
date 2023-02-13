@@ -60,4 +60,8 @@ class UnExepackCommand implements Callable<Integer> {
 		return ExitCode.OK;
 	}
 
+	void setInputFile(Path inputFile) {
+		this.inputFile = inputFile;
+	}
+
 }
