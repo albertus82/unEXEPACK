@@ -89,7 +89,7 @@
 
 		<launch4j bindir="${launch4j.bindir}">
 			<config outfile="${project.build.directory}/${project.name}.exe" jarpath="${project.name}.${project.packaging}" headertype="console" dontwrapjar="true" stayalive="true" restartoncrash="false" priority="normal" errtitle="${project.name}" chdir=".">
-				<jre minversion="${maven.compiler.target}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
+				<jre minversion="${maven.compiler.release}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
 				<classPath mainclass="${main.class}" />
 				<versionInfo fileversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtfileversion="${project.version}" filedescription="${project.name}" copyright=" " productversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtproductversion="${project.version}" productname="${project.name}" internalname="${project.name}" originalfilename="${project.name}.exe" companyname="" />
 			</config>
@@ -97,9 +97,9 @@
 	</target>
 
 	<target name="checksums">
-		<property name="checksums.file" value="${project.build.directory}/checksums.md" />
+		<property name="release.file" value="${project.build.directory}/release.md" />
 		<property name="checksums.directory" value="${project.build.directory}/checksums" />
-		<delete file="${checksums.file}" />
+		<delete file="${release.file}" />
 		<checksum algorithm="SHA-256" todir="${checksums.directory}" forceoverwrite="yes" fileext=".sha256" pattern="* {1}&#13;&#10;[`{0}`](https://www.virustotal.com/it/file/{0}/analysis/)">
 			<fileset dir="${project.build.directory}">
 				<include name="*.jar" />
@@ -107,12 +107,12 @@
 				<include name="*.zip" />
 			</fileset>
 		</checksum>
-		<echo file="${checksums.file}" message="### Checksums SHA-256&#13;&#10;" />
-		<concat destfile="${checksums.file}" append="true">
+		<echo file="${release.file}" message="```xml&#13;&#10;&lt;dependency&gt;&#13;&#10;&#32;&#32;&#32;&#32;&lt;groupId&gt;${project.groupId}&lt;/groupId&gt;&#13;&#10;&#32;&#32;&#32;&#32;&lt;artifactId&gt;${project.artifactId}&lt;/artifactId&gt;&#13;&#10;&#32;&#32;&#32;&#32;&lt;version&gt;${project.version}&lt;/version&gt;&#13;&#10;&lt;/dependency&gt;&#13;&#10;```&#13;&#10;&#13;&#10;### Checksums SHA-256&#13;&#10;&#13;&#10;" />
+		<concat destfile="${release.file}" append="true">
 			<fileset dir="${checksums.directory}" />
 		</concat>
-		<loadfile property="checksums.file.contents" srcFile="${checksums.file}" />
-		<echo level="info" message="${checksums.file.contents}" />
+		<loadfile property="release.file.contents" srcFile="${release.file}" />
+		<echo level="info" message="${release.file.contents}" />
 		<delete dir="${checksums.directory}" />
 	</target>
 

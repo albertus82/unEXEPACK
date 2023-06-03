@@ -30,7 +30,7 @@ public class ByteArrayUtils {
 	 * @param haystack the array to be scanned
 	 * @param needle the array containing the sequence of bytes to match
 	 *
-	 * @return an {@code OptionalInt} describing the index of the beginning of the
+	 * @return an {@code OptionalInt} containing the index of the beginning of the
 	 *         needle, or an empty {@code OptionalInt} if the needle is not found
 	 *
 	 * @throws IllegalArgumentException if {@code needle} is empty

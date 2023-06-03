@@ -3,6 +3,7 @@ package io.github.albertus82.unexepack;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
@@ -56,7 +57,7 @@ class UnExepackCommand implements Callable<Integer> {
 			log.severe("The input file is not a valid EXEPACK executable.");
 			return ExitCode.SOFTWARE;
 		}
-		Files.write(outputFile, unpackedExec);
+		Files.write(outputFile, unpackedExec, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
 		return ExitCode.OK;
 	}
 

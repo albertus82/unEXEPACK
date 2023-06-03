@@ -6,8 +6,9 @@ jobs:
   build:
     name: Build
     strategy:
+      fail-fast: false
       matrix:
-        java: [ '8', '11', '17', '19', '20-ea', '21-ea' ]
+        java: [ '11', '17', '19', '20-ea' ]
         os: [ windows-latest, ubuntu-latest, macOS-latest ]
     runs-on: ${{ matrix.os }}
     env:
@@ -18,4 +19,5 @@ jobs:
       with:
         distribution: zulu
         java-version: ${{ matrix.java }}
+        cache: 'maven'
     - run: ./mvnw clean install -B -V -e -ntp -DtestSecret=${{ secrets.TEST_SECRET }}
