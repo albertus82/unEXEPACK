@@ -89,7 +89,7 @@
 
 		<launch4j bindir="${launch4j.bindir}">
 			<config outfile="${project.build.directory}/${project.name}.exe" jarpath="${project.name}.${project.packaging}" headertype="console" dontwrapjar="true" stayalive="true" restartoncrash="false" priority="normal" errtitle="${project.name}" chdir=".">
-				<jre minversion="${maven.compiler.release}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
+				<jre minversion="${maven.compiler.release}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" path="%JAVA_HOME%;%PATH%" />
 				<classPath mainclass="${main.class}" />
 				<versionInfo fileversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtfileversion="${project.version}" filedescription="${project.name}" copyright=" " productversion="${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0" txtproductversion="${project.version}" productname="${project.name}" internalname="${project.name}" originalfilename="${project.name}.exe" companyname="" />
 			</config>
