@@ -13,21 +13,22 @@ jobs:
     env:
       MAVEN_OPTS: -Dhttp.keepAlive=false
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/checkout@v6
+    - uses: actions/setup-java@v5
       with:
         distribution: temurin
-        java-version: 17
+        java-version: 25
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-        server-id: ossrh-release
+        server-id: central
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
-    - run: mvn clean deploy -B -V -e -ntp -DtestSecret=${{ secrets.TEST_SECRET }}
+    - run: mvn clean deploy -B -V -e -ntp -DtestSecret=$TEST_SECRET
       env:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-    - uses: ncipollo/release-action@v1
+        TEST_SECRET: ${{ secrets.TEST_SECRET }}
+    - uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b
       with:
         artifacts: target/*.jar, target/*.tar.gz, target/*.zip
         bodyFile: target/release.md
@@ -35,4 +36,6 @@ jobs:
         draft: true
         generateReleaseNotes: true
     - run: >-
-        for f in target/*.exe target/*.jar target/*.tar.gz target/*.zip; do echo "Submitting file $f to VirusTotal..." && sleep 15 && curl -v -H "accept: application/json" -H "content-type: multipart/form-data" -H "x-apikey: ${{ secrets.VT_API_KEY }}" -F "file=@$f" https://www.virustotal.com/api/v3/files && echo && echo "File $f submitted to VirusTotal."; done
+        for f in target/*.exe target/*.jar target/*.tar.gz target/*.zip; do echo "Submitting file $f to VirusTotal..." && sleep 15 && curl -v -H "accept: application/json" -H "content-type: multipart/form-data" -H "x-apikey: $VT_API_KEY" -F "file=@$f" https://www.virustotal.com/api/v3/files && echo && echo "File $f submitted to VirusTotal."; done
+      env:
+        VT_API_KEY: ${{ secrets.VT_API_KEY }}
