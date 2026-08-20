@@ -59,7 +59,7 @@ class ExepackHeader {
 
 	@Override
 	public String toString() {
-		return String.format("realIp = 0x%04X, realCs = 0x%04X, memStart = 0x%04X, exepackSize = 0x%04X, realSp = 0x%04X, realSs = 0x%04X, destLen = 0x%04X, skipLen = 0x%04X, signature = 0x%04X", realIp, realCs, memStart, exepackSize, realSp, realSs, destLen, skipLen, signature);
+		return String.format("realIp=0x%04X, realCs=0x%04X, memStart=0x%04X, exepackSize=0x%04X, realSp=0x%04X, realSs=0x%04X, destLen=0x%04X, skipLen=0x%04X, signature=0x%04X", realIp, realCs, memStart, exepackSize, realSp, realSs, destLen, skipLen, signature);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 import lombok.extern.java.Log;
 import picocli.CommandLine;
@@ -18,7 +19,6 @@ import picocli.CommandLine.Parameters;
 @Command(description = "Unpacker for Microsoft EXEPACK utility compressor.")
 class UnExepackCommand implements Callable<Integer> {
 
-	private static final int MAX_INPUT_FILE_SIZE = 0x800000; // 8 MiB, based on the info available at https://w4kfu.github.io/unEXEPACK/files/exepack_list.html
 	private static final String LOGGING_FORMAT_PROPERTY = "java.util.logging.SimpleFormatter.format";
 
 	@Parameters(index = "0", paramLabel = "<EXEPACK_file>")
@@ -40,7 +40,7 @@ class UnExepackCommand implements Callable<Integer> {
 			log.severe("The input file does not exist.");
 			return ExitCode.SOFTWARE;
 		}
-		if (Files.size(inputFile) > MAX_INPUT_FILE_SIZE) {
+		if (Files.size(inputFile) > UnExepack.MAX_INPUT_FILE_SIZE) {
 			log.severe("The input file is too large.");
 			return ExitCode.SOFTWARE;
 		}
@@ -50,11 +50,15 @@ class UnExepackCommand implements Callable<Integer> {
 			unpackedExec = UnExepack.unpack(packedExec);
 		}
 		catch (final InvalidDosHeaderException e) {
-			log.severe("The input file is not a valid MS-DOS executable.");
+			log.log(Level.SEVERE, "The input file is not a valid MS-DOS executable", e);
 			return ExitCode.SOFTWARE;
 		}
 		catch (final InvalidExepackHeaderException e) {
-			log.severe("The input file is not a valid EXEPACK executable.");
+			log.log(Level.SEVERE, "The input file is not a valid EXEPACK executable", e);
+			return ExitCode.SOFTWARE;
+		}
+		catch (final UnExepackException e) {
+			log.log(Level.SEVERE, "Failed to unpack the input file. It may be corrupt, truncated, or malformed", e);
 			return ExitCode.SOFTWARE;
 		}
 		Files.write(outputFile, unpackedExec, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);

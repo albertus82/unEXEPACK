@@ -1,6 +1,5 @@
 package io.github.albertus82.unexepack;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class UnExepackCommandTest {
 
 	@Test
-	void testUnExepackCommandWithInvalidInputFile() throws IOException {
+	void testUnExepackCommandWithInvalidInputFile() throws Exception {
 		Path tempFile = null;
 		try {
 			tempFile = Files.createTempFile(null, null); // create a temporary file for testing
@@ -30,7 +29,7 @@ class UnExepackCommandTest {
 	}
 
 	@Test
-	void testUnExepackCommandWithNonExistingInputFile() throws IOException {
+	void testUnExepackCommandWithNonExistingInputFile() throws Exception {
 		final Path tempFile = Paths.get(UUID.randomUUID().toString());
 		Assertions.assertTrue(Files.notExists(tempFile));
 

@@ -86,7 +86,7 @@ class DosHeader {
 
 	@Override
 	public String toString() {
-		return String.format("eMagic = 0x%04X, eCblp = 0x%04X, eCp = 0x%04X, eCrlc = 0x%04X, eCparhdr = 0x%04X, eMinAlloc = 0x%04X, eMaxAlloc = 0x%04X, eSs = 0x%04X, eSp = 0x%04X, eCsum = 0x%04X, eIp = 0x%04X, eCs = 0x%04X, eLfarlc = 0x%04X, eOvno = 0x%04X", eMagic, eCblp, eCp, eCrlc, eCparhdr, eMinAlloc, eMaxAlloc, eSs, eSp, eCsum, eIp, eCs, eLfarlc, eOvno);
+		return String.format("eMagic=0x%04X, eCblp=0x%04X, eCp=0x%04X, eCrlc=0x%04X, eCparhdr=0x%04X, eMinAlloc=0x%04X, eMaxAlloc=0x%04X, eSs=0x%04X, eSp=0x%04X, eCsum=0x%04X, eIp=0x%04X, eCs=0x%04X, eLfarlc=0x%04X, eOvno=0x%04X", eMagic, eCblp, eCp, eCrlc, eCparhdr, eMinAlloc, eMaxAlloc, eSs, eSp, eCsum, eIp, eCs, eLfarlc, eOvno);
 	}
 
 	byte[] toByteArray() {
